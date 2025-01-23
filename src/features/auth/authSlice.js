@@ -58,7 +58,8 @@ export const loginUser = createAsyncThunk(
 export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
   async (token, thunkapi) => {
-   
+    console.log("token in logout page");
+   console.log(token);
    try {
     const apiBaseUrl = import.meta.env.VITE_REACT_APP_API_URL;
     const response = await axios.post(`${apiBaseUrl}/auth/logout`,{},{
