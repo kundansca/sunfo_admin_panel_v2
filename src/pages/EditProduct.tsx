@@ -1,77 +1,137 @@
 //  image upload part
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import ImageUploading, { ImageListType } from 'react-images-uploading';
 import { setPageTitle } from '../store/themeConfigSlice';
 import { useDispatch } from 'react-redux';
 import IconX from '../components/Icon/IconX';
-import { useParams } from 'react-router-dom';
 
 // other product details of the page.
-import EditProductForm from './Forms/EditProductForm';
-import axios from 'axios';
-import PageLoader from '../extra/PageLoader';
+import EditProducForm from './Forms/EditProductForm';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 // image upload part
-const AddProduct = () => {
+const EditProduct= () => {
+
+
+    const {slugTitle}=useParams();
+    const [productData,setProductData]=useState<any>(null);
+    const [isloading,setIsloading]=useState<any>(false);
+
+
+    let  apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
+    let apiImage=import.meta.env.VITE_REACT_APP_IMAGE_API_URL;
    
-   const {slugTitle}=useParams();
-   const [productData,setProductData]=useState<any>(null);
-   const [isloading,setIsloading]=useState<any>(false);
-  
-   const fetchProductData=async()=>{
-
-     setIsloading(true);
-    try{
-        
-        
-       let response= await axios.get(`https://sunfo-backend.onrender.com/api/products/${slugTitle}`);
-     
-       setProductData({...response.data,tags:["youtube,facebook"]});
-       console.log("response data");
-       console.log(response.data);
-
-
-            // Set images state for preview
-        
-                setImages([
-                    {
-                        dataURL: response.data.productImage, // URL of the image
-                        file: undefined, // File is undefined because this is fetched, not uploaded
-                    },
-                ]);
+    // const fetchProductData=async()=>{
+    //     setIsloading(true);
+    //     try{
             
-               let subImagesFile= response.data.productSubImages.map((subImage:any)=>{
+            
+    //        let response= await axios.get(`${apiUrl}/products/${slugTitle}`);
+         
+    //        setProductData({...response.data});
+    //        console.log("edit product data");
+    //        console.log(response.data);
+    
+    
+    //             // Set images state for preview
+               
+
+            
+    //                 setImages([
+    //                     {
+    //                         dataURL: `${apiImage}${response.data.productImage}`, // URL of the image
+    //                         file: undefined, 
+                            
+    //                         // File is undefined because this is fetched, not uploaded
+
+    //                     },
+    //                 ]);
+                
+    //                let subImagesFile= response.data.productSubImages.map((subImage:any)=>{
+    //                     return {
+    //                         dataURL:`${apiImage}${subImage}`, 
+    //                         file: undefined,
+    //                     }
+    //                 });
+    //                 setImages2(subImagesFile);
+    
+                 
+          
+    
+    //     }catch(error){
+          
+    //         Swal.fire({
+    //             icon: 'warning',
+    //             text: 'Unable to fetch products at the moment.try again.',
+    //             confirmButtonText: 'OK',
+    //         });
+    //     }finally{
+    //         setIsloading(false);
+    //     }
+          
+    
+    
+    // }
+
+
+    const fetchProductData = async () => {
+        setIsloading(true);
+        try {
+            let response = await axios.get(`${apiUrl}/products/${slugTitle}`);
+            setProductData({ ...response.data,tags:response.data.tag.split(","),tag:"" });
+    
+            console.log("edit product data");
+            console.log(response.data);
+    
+            // Convert main product image URL to File object
+            const mainImageBlob = await fetch(`${apiImage}${response.data.productImage}`).then((res) =>
+                res.blob()
+            );
+            const mainImageFile = new File([mainImageBlob], "mainImage.jpg", { type: mainImageBlob.type });
+    
+            setImages([
+                {
+                    dataURL: `${apiImage}${response.data.productImage}`, // URL of the image
+                    file: mainImageFile, // File object set here
+                },
+            ]);
+    
+            // Convert sub images URLs to File objects
+            const subImagesFile = await Promise.all(
+                response.data.productSubImages.map(async (subImage:any) => {
+                    const subImageBlob = await fetch(`${apiImage}${subImage}`).then((res) => res.blob());
                     return {
-                        dataURL:subImage, 
-                        file: undefined,
-                    }
-                });
-                setImages2(subImagesFile);
+                        dataURL: `${apiImage}${subImage}`,
+                        file: new File([subImageBlob], "subImage.jpg", { type: subImageBlob.type }),
+                    };
+                })
+            );
+    
+            setImages2(subImagesFile);
+        } catch (error) {
+            Swal.fire({
+                icon: "warning",
+                text: "Unable to fetch products at the moment. Try again.",
+                confirmButtonText: "OK",
+            });
+        } finally {
+            setIsloading(false);
+        }
+    };
+    
+ 
+    useEffect(()=>{
+     fetchProductData();
+ 
+    },[slugTitle]);
 
-             
-      
 
-    }catch(error){
-      
-        Swal.fire({
-            icon: 'warning',
-        
-            text: 'Unable to fetch products at the moment.try again.',
-            confirmButtonText: 'OK',
-        });
-    }finally{
-        setIsloading(false);
-    }
-      
 
-   }
 
-   useEffect(()=>{
-    fetchProductData();
 
-   },[slugTitle]);    
+
 
     const dispatch = useDispatch();
     
@@ -107,16 +167,29 @@ const AddProduct = () => {
     
   const imageData=(data:any)=>{
         
+
+         let arrImage=images2.map((image:any)=>{
+        
+            return image?.file;
+          });
+      
+
+
+
+         console.log(arrImage);
+
        
-    return {...data,productImage:images[0].dataURL,productCoverImages:images2}
+        
+     
+         
+    return {...data,productImage:images[0]?.file,productSubImages:arrImage};
+    
     
 
   }
   
     return (
         <>
-        <PageLoader loading={isloading}/>
-     {isloading===false && productData!==null &&<>
             <div>
                 <ul className="flex space-x-2 rtl:space-x-reverse">
                     <li>
@@ -212,6 +285,7 @@ const AddProduct = () => {
                                                                 title="Clear Image"
                                                                 onClick={() => onImageRemove(index)}
                                                             >
+                                
                                                                 <IconX className="w-3 h-3" />
                                                             </button>
                                                             <img src={image.dataURL} alt="img" className="object-cover shadow rounded w-full !max-h-48" />
@@ -228,19 +302,17 @@ const AddProduct = () => {
                     </div>
                 </div>
             </div>
-              {
-               productData!==null && <EditProductForm productData={productData}/>
-                }
+           {
+            productData!==null && <EditProducForm imageData={imageData} productData={productData}/>
+           }
 
 
-</>
-        
-        }
-            
+            <form>
+    
+</form>
 
         </>
-            
     );
 };
 
-export default AddProduct;
+export default EditProduct;

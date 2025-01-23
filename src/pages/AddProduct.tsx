@@ -63,6 +63,11 @@ const AddProduct = () => {
     
 
   }
+  const clearImageData=()=>{
+    setImages([]);
+    setImages2([]);
+      
+  }
   
     return (
         <>
@@ -178,7 +183,7 @@ const AddProduct = () => {
                     </div>
                 </div>
             </div>
-            <BasicProductDetails imageData={imageData}/>
+            <BasicProductDetails imageData={imageData} clearImageData={clearImageData}/>
 
 
 

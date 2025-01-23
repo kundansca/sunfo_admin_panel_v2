@@ -223,7 +223,7 @@ const BasicProductDetails = (props:any) => {
    const sendProductData = async (formData: FormData) => {
      
         const apiBaseUrl = import.meta.env.VITE_REACT_APP_API_URL;
-        
+        setIsloading(true);
         try {
            
             for (let [key, value] of formData.entries()) {
@@ -237,6 +237,11 @@ const BasicProductDetails = (props:any) => {
             });
             
             console.log("API Response:", response.data);
+
+            props.clearImageData();
+            setProductData({title:"",brand:"",tags:[],description:"",productCode:"",isInStock:false,sellingPrice:0,discount:0,
+                disableProduct:false,color:"",colorsAvailable:[],sizesAvailable:[],categories:[]});
+
             
             if (response.data.success) {
                 Swal.fire({
@@ -252,6 +257,8 @@ const BasicProductDetails = (props:any) => {
                 title: 'Error',
                 text: error.response?.data?.message || 'Failed to create product',
             });
+        }finally{
+            setIsloading(false);
         }
     };
 
@@ -409,7 +416,7 @@ const BasicProductDetails = (props:any) => {
           })
           return ;
        
-    }else if(productData.description!==0){
+    }else if(productData.description===""){
 
     Swal.fire({
         icon:"error",
@@ -438,7 +445,8 @@ const BasicProductDetails = (props:any) => {
         formData.append('description', processedData.description);
         formData.append('price', processedData.price);
         formData.append('sellingPrice', processedData.sellingPrice);
-        formData.append('tag', processedData.tag);
+        formData.append('tag', processedData.tags);
+        formData.append('discount', processedData.discount);
         
         // Add arrays as JSON strings
         formData.append('sizesAvailable', JSON.stringify(processedData.sizesAvailable));
@@ -532,6 +540,7 @@ const BasicProductDetails = (props:any) => {
                             name="quantity"
                             value={productData.quantity}
                             onChange={handleChange}
+                       
                         />
                     </div>
                 </div>
@@ -646,6 +655,8 @@ const BasicProductDetails = (props:any) => {
                         name="sellingPrice"
                         value={productData.sellingPrice}
                         onChange={handleChange}
+                        min={0}
+                    
 
                     />
                 </div>
@@ -661,6 +672,7 @@ const BasicProductDetails = (props:any) => {
                         name="discount"
                         value={productData.discount}
                         onChange={handleChange}
+                        min={0}
                    
                     />
                 </div>
@@ -750,6 +762,7 @@ const BasicProductDetails = (props:any) => {
                         placeholder="Enter Description"
                         onChange={handleChange}
                         name="description"
+                        value={productData.description}
                     ></textarea>
                 </div>
 
