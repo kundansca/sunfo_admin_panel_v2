@@ -233,7 +233,7 @@ const ViewOrders = () => {
                                     {
                                         accessor: 'id',
                                         title: 'Action',
-                                        render: ({ razorpay_order_id }) => (
+                                        render: ({ razorpay_order_id,_id }) => (
                                             <div className="flex space-x-2">
                                                 <button
                                                     className="px-3 py-1 text-white bg-blue-500 rounded hover:bg-blue-600"
