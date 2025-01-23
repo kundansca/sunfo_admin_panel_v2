@@ -1,0 +1,14 @@
+@media print {
+    body * {
+        visibility: hidden; /* Hide everything */
+    }
+    #printable-table, #printable-table * {
+        visibility: visible; /* Show only the table */
+    }
+    #printable-table {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+    }
+}

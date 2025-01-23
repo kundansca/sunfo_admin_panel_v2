@@ -1,0 +1,27 @@
+@media print {
+    body  {
+        visibility:hidden!important;
+      
+    }
+    thead {
+        display: table-row-group; /* Prevents repeating headers on new pages */
+      }
+
+     
+    
+      table {
+        page-break-inside: auto; 
+      }
+    .print{
+    visibility: visible!important;
+    width: 100%
+  
+    }
+   
+    
+  
+    
+  
+    
+    
+}
