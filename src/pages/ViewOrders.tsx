@@ -62,6 +62,10 @@ let apiImage=import.meta.env.VITE_REACT_APP_IMAGE_API_URL;
                 productImage: order.products[0]?.productImage || '',
                 orderStatus: order.paymentDetails?.paymentStatus || 'Pending',
                 totalAmount: order.total,
+                razorpay_order_id:order?.razorpay_order_id
+                
+
+                
             }));
             setRecordsData(orders);
         } catch (error) {
@@ -199,11 +203,11 @@ let apiImage=import.meta.env.VITE_REACT_APP_IMAGE_API_URL;
                                     {
                                         accessor: '_id',
                                         title: 'Actions',
-                                        render: ({ _id }) => (
+                                        render: ({ _id,razorpay_order_id }) => (
                                             <div className="flex space-x-2">
                                                 <button
                                                     className="px-3 py-1 text-white bg-blue-500 rounded hover:bg-blue-600"
-                                                    onClick={() => goToOrderEdit(_id)}
+                                                    onClick={() => goToOrderEdit(razorpay_order_id)}
                                                 >
                                                     View Details
                                                 </button>
