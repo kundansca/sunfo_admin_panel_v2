@@ -9,7 +9,7 @@ import PageLoader from '../extra/PageLoader';
 import ExportButtons from '../components/ExportButtons';
 import { useSelector } from 'react-redux';
 
-const ViewOrders = () => {
+const ViewTransactions = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const {role}=useSelector((state:any)=>{
@@ -271,4 +271,4 @@ const ViewOrders = () => {
     );
 };
 
-export default ViewOrders;
+export default ViewTransactions;
